@@ -157,16 +157,31 @@ function ServiceCard({ service }) {
 
 function ContactForm() {
   const [status, setStatus] = useState('');
-  const [draft, setDraft] = useState('');
-  function submit(event) {
+  const [sending, setSending] = useState(false);
+  const [failed, setFailed] = useState(false);
+  async function submit(event) {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    const subject = `Consulta de ingeniería — ${form.get('company') || form.get('name')}`;
-    const body = `Nombre: ${form.get('name')}\nEmpresa: ${form.get('company') || 'No especificada'}\nCorreo: ${form.get('email')}\nServicio: ${form.get('service')}\n\nProyecto:\n${form.get('message')}`;
-    const url = `mailto:info@ingeniax.com.co?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    setDraft(url);
-    setStatus('Tu consulta está preparada. Se abrirá tu aplicación de correo para que revises y envíes el mensaje.');
-    window.location.href = url;
+    if (sending) return;
+    const element = event.currentTarget;
+    const data = Object.fromEntries(new FormData(element));
+    setSending(true);
+    setStatus('');
+    setFailed(false);
+    try {
+      const response = await fetch(import.meta.env.VITE_CONTACT_ENDPOINT || '/api/contact', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data), signal: AbortSignal.timeout(45000),
+      });
+      const result = await response.json();
+      if (!response.ok || result.ok !== true) throw new Error('Send failed');
+      setStatus('Tu consulta fue enviada. Pronto nos pondremos en contacto contigo.');
+      element.reset();
+    } catch {
+      setFailed(true);
+      setStatus('No pudimos confirmar el envío. Tus datos siguen en el formulario; puedes intentarlo más tarde o escribirnos directamente.');
+    } finally {
+      setSending(false);
+    }
   }
   return <form className="contact-form" onSubmit={submit}>
     <h3>Cuéntanos qué tienes en mente.</h3>
@@ -186,9 +201,10 @@ function ContactForm() {
       </select>
     </label>
     <label>Tu proyecto <span>*</span><textarea required name="message" rows={3} placeholder="Cuéntanos sobre tu proceso, tu reto o esa idea que quieres hacer realidad…" maxLength={4000}/></label>
-    <button type="submit" className="button button-primary">Conversemos sobre tu proyecto <ArrowUpRight size={18}/></button>
-    <p className="form-note"><Mail size={13}/> Prepararemos tu consulta en tu aplicación de correo.</p>
-    {status && <div className="form-status" role="status"><Check size={18}/><div>{status}<a href={draft}>Abrir el correo de nuevo <ArrowUpRight size={13}/></a><span>También puedes escribirnos a info@ingeniax.com.co.</span></div></div>}
+    <div hidden aria-hidden="true"><label>Sitio web<input name="website" tabIndex={-1} autoComplete="off"/></label></div>
+    <button type="submit" disabled={sending} aria-busy={sending} className="button button-primary">{sending ? 'Enviando tu consulta…' : 'Conversemos sobre tu proyecto'} <ArrowUpRight size={18}/></button>
+    <p className="form-note"><Mail size={13}/> Enviaremos tu consulta directamente a nuestro equipo.</p>
+    {status && <div className="form-status" role={failed ? 'alert' : 'status'}>{!failed && <Check size={18}/>}<div>{status}{failed && <a href="mailto:proyectos@ingeniax.com.co">Escribir a proyectos@ingeniax.com.co <ArrowUpRight size={13}/></a>}</div></div>}
   </form>;
 }
 
