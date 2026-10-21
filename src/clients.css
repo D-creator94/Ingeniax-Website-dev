@@ -1,0 +1,89 @@
+.clients {
+  padding-block: 48px 30px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+
+.clients-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.clients-heading .eyebrow { margin-bottom: 12px; }
+.clients-heading h2 { font-size: 30px; letter-spacing: -1px; }
+.clients-heading p { margin-top: 8px; color: var(--muted); font-size: 13px; }
+
+.clients-viewport {
+  overflow: hidden;
+  margin-top: 22px;
+  mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+}
+
+.clients-track {
+  display: flex;
+  width: max-content;
+  animation: clients-scroll 38s linear infinite;
+}
+
+.clients-group {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.client-logo {
+  display: grid;
+  place-items: center;
+  flex: 0 0 220px;
+  width: 220px;
+  height: 130px;
+}
+
+.client-image { display: flex; align-items: center; justify-content: center; width: 180px; height: 112px; overflow: hidden; }
+.client-image img { display: block; flex-shrink: 0; width: 100%; height: auto; }
+.client-image-darnel img { width: 142px; }
+/* The original Cotecmar SVG is white; preserve it on a contrasting blue backing. */
+.client-image-cotecmar { width: 108px; height: 108px; background: #003882; border-radius: 6px; }
+.client-image-cotecmar img { width: 88px; }
+.client-image-team img { width: 190px; }
+.client-image-apolo img { width: 174px; }
+
+/* Frame the left-hand emblem in the original portfolio, without altering its artwork. */
+.client-image-litoral { position: relative; width: 96px; height: 96px; }
+.client-image-litoral img {
+  position: absolute;
+  width: 352.941176%;
+  max-width: none;
+  left: -64.705882%;
+  top: -41.176471%;
+}
+
+@media (hover: hover) {
+  .clients-viewport:hover .clients-track { animation-play-state: paused; }
+}
+
+@keyframes clients-scroll { to { transform: translateX(-50%); } }
+
+@media (max-width: 767px) {
+  .clients { padding-block: 36px 20px; }
+  .clients-heading { gap: 12px; }
+  .clients-heading h2 { font-size: 27px; }
+  .clients-heading p { font-size: 12px; max-width: 220px; }
+  .client-logo { flex-basis: 190px; width: 190px; height: 120px; }
+  .clients-track { animation-duration: 34s; }
+}
+
+@media (prefers-reduced-motion: reduce), print {
+  .clients-viewport { overflow: visible; mask-image: none; }
+  .clients-track { width: 100%; animation: none; transform: none; }
+  .clients-group { flex: 1; flex-wrap: wrap; justify-content: center; }
+  .clients-group[aria-hidden="true"] { display: none; }
+  .client-logo { flex: 0 0 50%; width: 50%; max-width: 220px; }
+  .client-image { max-width: calc(100% - 16px); }
+  .client-image:not(.client-image-litoral) img { max-width: 100%; }
+}

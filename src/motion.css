@@ -1,0 +1,182 @@
+:root {
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --ease-in-out: cubic-bezier(.65, 0, .35, 1);
+}
+
+/* Brand assets keep their original artwork and aspect ratio. */
+.brand { position: relative; min-height: 48px; }
+.brand-image { display: none; width: 220px; height: 72px; object-fit: contain; }
+.brand-image.is-loaded { display: block; }
+.brand-image-on-white { padding: 8px 12px; background: white; border-radius: 5px; }
+.technology-brand { min-width: 0; padding-inline: 24px; gap: 22px; }
+.technology-logo-slot { display: grid; place-items: center; width: 100%; height: 72px; }
+.technology-logo-slot img { display: block; width: 100%; max-width: 240px; height: 72px; object-fit: contain; }
+.technology-logo-slot .logo-siemens { max-width: 205px; }
+.technology-logo-slot .logo-schneider { max-width: 220px; }
+
+/* The observer adds this class only when motion is supported and enabled. */
+.reveal-pending { opacity: 0; }
+.reveal-pending:focus-within { opacity: 1; }
+.projects-grid { position: relative; }
+
+.service-extra {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  margin-bottom: 0;
+  transition: grid-template-rows 380ms var(--ease-out), opacity 250ms ease, margin-bottom 380ms var(--ease-out);
+}
+.service-extra > div { min-height: 0; overflow: hidden; }
+.service-extra.is-expanded { grid-template-rows: 1fr; opacity: 1; margin-bottom: 20px; }
+.service-extra p { line-height: inherit; }
+.service-toggle { transition: rotate 300ms var(--ease-out); }
+.service-card [aria-expanded="true"] .service-toggle { rotate: 45deg; }
+
+.scroll-progress { display: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-copy > * { animation: rise-in 800ms var(--ease-out) both; }
+  .hero-copy > :nth-child(2) { animation-delay: 80ms; }
+  .hero-copy > :nth-child(3) { animation-delay: 160ms; }
+  .hero-copy > :nth-child(4) { animation-delay: 240ms; }
+  .hero-copy > :nth-child(5) { animation-delay: 320ms; }
+  .hero-tech-note { animation: rise-in 900ms 400ms var(--ease-out) both; }
+  .hero-image { animation: hero-settle 1600ms var(--ease-out) both; }
+  .hero-bottom-inner > a svg { animation: scroll-cue 1500ms 1200ms ease-in-out 2; }
+
+  .button {
+    transition: background 220ms ease, transform 300ms var(--ease-out), box-shadow 300ms ease;
+  }
+  .button > svg, .back-top > svg, .project-info h3 > svg {
+    transition: translate 300ms var(--ease-out);
+  }
+  .button:is(:hover, :focus-visible) > svg, .back-top:is(:hover, :focus-visible) > svg { translate: 3px -2px; }
+  .button:active { transform: translateY(0) scale(.98); }
+  .icon-button { transition: background 200ms ease, transform 250ms var(--ease-out); }
+  .icon-button:active { transform: scale(.92); }
+  .menu-toggle svg { animation: icon-in 220ms var(--ease-out); }
+
+  .service-card {
+    transition: transform 400ms var(--ease-out), box-shadow 400ms ease, border-color 300ms ease;
+  }
+  .service-icon { transition: transform 400ms var(--ease-out), box-shadow 400ms ease; }
+  .service-card:focus-within { border-color: #a8c0ef; box-shadow: 0 15px 35px #122b5110; }
+
+  .project-card {
+    transform: perspective(1000px) rotateX(var(--rx)) rotateY(var(--ry));
+    transition: transform 240ms var(--ease-out), border-color 300ms ease, box-shadow 400ms ease;
+  }
+  .project-screen-wrap { transition: transform 650ms var(--ease-out); }
+  .project-card:is(:hover, :focus-visible) .project-info h3 > svg { translate: 3px -3px; }
+  .project-card:focus-visible .project-screen-wrap { transform: perspective(800px) rotateY(0) rotateX(0); }
+  .project-card:is(:hover, :focus-visible) .pipe-active { animation: process-flow 1600ms linear infinite; }
+  .project-card:is(:hover, :focus-visible) .mini-chart { animation: chart-in 650ms var(--ease-out); }
+  .project-filters > button { transition: background 250ms ease, color 250ms ease, border-color 250ms ease, transform 250ms var(--ease-out); }
+  .project-filters > button:active { transform: scale(.96); }
+
+  .technology-logo-slot img { transition: transform 500ms var(--ease-out); }
+  .technology-chips > span { transition: background 250ms ease, border-color 250ms ease; }
+  .value-block > div > svg, .industry-grid > div > svg { transition: transform 400ms var(--ease-out), color 250ms ease; }
+  .contact-details .contact-icon { transition: background 250ms ease, border-color 250ms ease; }
+  .contact-details a:is(:hover, :focus-visible) .contact-icon { background: #2864ec26; border-color: #5689d9; }
+  .form-status { animation: rise-in 350ms var(--ease-out); }
+
+  .project-modal[open] { animation: modal-in 380ms var(--ease-out); }
+  .project-modal[open]::backdrop { animation: backdrop-in 300ms ease both; }
+  .project-modal.is-closing { animation: none; pointer-events: none; }
+  .project-modal.is-closing::backdrop { animation: backdrop-out 180ms ease forwards; }
+
+  @supports (animation-timeline: scroll()) {
+    .scroll-progress {
+      display: block;
+      position: absolute;
+      inset: auto 0 -1px;
+      height: 2px;
+      background: linear-gradient(90deg, #2864ec, #53cabf);
+      transform-origin: left;
+      animation: reading-progress linear both;
+      animation-timeline: scroll(root);
+      pointer-events: none;
+    }
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .service-card:hover .service-icon { transform: translateY(-3px) rotate(-5deg); box-shadow: 0 8px 20px #2864ec12; }
+  .technology-brand:hover img { transform: translateY(-4px); }
+  .technology-chips > span:hover { background: #edf4ff; border-color: #bdd1f4; }
+  .value-block:hover > div > svg, .industry-grid > div:hover > svg { transform: translateY(-4px); color: var(--blue); }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .site-header .brand-image { width: 160px; height: 56px; }
+  .main-nav { gap: 12px; }
+  .main-nav > a:not(.button) { font-size: 10px; }
+  .main-nav .button { font-size: 9px; padding: 11px 9px; gap: 6px; }
+}
+
+@media (max-width: 767px) {
+  .brand-image { width: 180px; height: 60px; }
+  .technology-brand { padding-inline: 10px; gap: 12px; }
+  .technology-logo-slot, .technology-logo-slot img { height: 48px; }
+  .technology-brand small { min-height: 22px; }
+  .main-nav {
+    display: flex;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    max-height: calc(100dvh - 73px);
+    overflow-y: auto;
+    transition: opacity 220ms ease, transform 300ms var(--ease-out), visibility 0s 300ms;
+  }
+  .main-nav.nav-open {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition-delay: 0s;
+  }
+  .main-nav > a { translate: 0 -5px; transition: translate 250ms var(--ease-out); }
+  .main-nav.nav-open > a { translate: 0 0; }
+}
+
+@media (hover: none) {
+  .service-card:hover, .button:hover { transform: none; }
+  .project-card:hover .project-screen-wrap { transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-pending { opacity: 1; }
+  .main-nav, .main-nav > a { transform: none; translate: none; }
+  .button:hover, .service-card:hover { transform: none; }
+}
+
+@keyframes rise-in {
+  from { opacity: 0; translate: 0 20px; }
+  to { opacity: 1; translate: 0 0; }
+}
+@keyframes hero-settle {
+  from { transform: scale(1.045); }
+  to { transform: scale(1); }
+}
+@keyframes scroll-cue {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 4px; }
+}
+@keyframes icon-in {
+  from { opacity: .4; transform: rotate(-35deg) scale(.8); }
+  to { opacity: 1; transform: rotate(0) scale(1); }
+}
+@keyframes process-flow { to { stroke-dashoffset: -32; } }
+@keyframes chart-in {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0); }
+}
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(20px) scale(.975); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes backdrop-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes reading-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }

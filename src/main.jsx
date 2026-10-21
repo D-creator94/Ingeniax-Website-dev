@@ -1,15 +1,29 @@
-import React, { useEffect, useId, useRef, useState } from 'react';
+import React, { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ArrowUpRight, ArrowRight, ArrowDown, Menu, X, Zap, Cpu, Network, Check, Plus, Minus, Layers3, Settings2, Activity, Gauge, Radio, ShieldCheck, Cable, Factory, Package, Wheat, Droplets, Phone, Mail, MapPin, Globe, Crosshair, Workflow, ChartNoAxesCombined, PanelsTopLeft } from 'lucide-react';
 import './styles.css';
+import './motion.css';
+import { brandLogo, brandLogoLight, technologies } from './brands';
+import { usePageMotion } from './usePageMotion';
+import Clients from './Clients';
 
-const navLinks = [['Nosotros', 'nosotros'], ['Servicios', 'servicios'], ['Proyectos', 'proyectos'], ['Tecnologías', 'tecnologias']];
+const navLinks = [['Clientes', 'clientes'], ['Nosotros', 'nosotros'], ['Servicios', 'servicios'], ['Proyectos', 'proyectos'], ['Tecnologías', 'tecnologias']];
 
 function Brand({ light = false }) {
+  const [source, setSource] = useState(light ? brandLogoLight : brandLogo);
+  const [loaded, setLoaded] = useState(false);
+  const [unavailable, setUnavailable] = useState(false);
   return <a className={`brand ${light ? 'brand-light' : ''}`} href="#inicio" aria-label="INGENIAX, inicio">
-    <svg viewBox="0 0 48 48" aria-hidden="true"><path className="mark-dark" d="M5 3 23 21l-6 6L5 15zm38 0v12L25 33l-6-6zM5 45V33l12-12 6 6zm38 0L25 27l6-6 12 12z"/><path fill="#3976ef" d="m24 14 10 10-10 10-10-10z"/><path fill="white" d="m24 19 5 5-5 5-5-5z"/></svg>
-    <span className="brand-word">INGEN<span>IA</span>X<small>INGENIERÍA EVOLUTIVA</small></span>
+    {!unavailable && <img className={`brand-image ${loaded ? 'is-loaded' : ''} ${light && source === brandLogo ? 'brand-image-on-white' : ''}`} src={source} alt="INGENIAX" width="2115" height="744" onLoad={() => setLoaded(true)} onError={() => { if (light && source !== brandLogo) setSource(brandLogo); else setUnavailable(true); }}/>}
+    {!loaded && <span className="brand-word">INGENIAX<small>INGENIERÍA EVOLUTIVA</small></span>}
   </a>;
+}
+
+function TechnologyBrands() {
+  return <div className="brand-ecosystem">{technologies.map(technology => <div className="technology-brand" key={technology.name}>
+    <div className="technology-logo-slot"><img className={technology.className} src={technology.logo} alt={technology.name} width="240" height="72" loading="lazy" decoding="async"/></div>
+    <small>{technology.description}</small>
+  </div>)}</div>;
 }
 
 function SectionLabel({ children, light = false }) {
@@ -43,30 +57,90 @@ function InterfaceScreen({ type = 'process', large = false }) {
 
 function ProjectCard({ project, onSelect }) {
   const Icon = project.icon;
-  function tilt(event) {
-    if (window.matchMedia('(prefers-reduced-motion: reduce), (pointer: coarse)').matches) return;
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width - .5;
-    const y = (event.clientY - rect.top) / rect.height - .5;
-    event.currentTarget.style.setProperty('--rx', `${-y * 5}deg`);
-    event.currentTarget.style.setProperty('--ry', `${x * 5}deg`);
+  const frameRef = useRef(0);
+  useEffect(() => () => cancelAnimationFrame(frameRef.current), []);
+  function resetTilt(event) {
+    cancelAnimationFrame(frameRef.current);
+    event.currentTarget.style.setProperty('--rx', '0deg');
+    event.currentTarget.style.setProperty('--ry', '0deg');
   }
-  return <button className={`project-card card-${project.color}`} onClick={() => onSelect(project)} onPointerMove={tilt} onPointerLeave={e => { e.currentTarget.style.setProperty('--rx', '0deg'); e.currentTarget.style.setProperty('--ry', '0deg'); }}>
+  function tilt(event) {
+    if (event.pointerType !== 'mouse' || window.matchMedia('(prefers-reduced-motion: reduce), (hover: none)').matches) return;
+    const card = event.currentTarget;
+    const { clientX, clientY } = event;
+    cancelAnimationFrame(frameRef.current);
+    frameRef.current = requestAnimationFrame(() => {
+      const rect = card.getBoundingClientRect();
+      const x = (clientX - rect.left) / rect.width - .5;
+      const y = (clientY - rect.top) / rect.height - .5;
+      card.style.setProperty('--rx', `${-y * 4}deg`);
+      card.style.setProperty('--ry', `${x * 4}deg`);
+    });
+  }
+  return <button className={`project-card card-${project.color}`} data-project={project.id} onClick={() => onSelect(project)} onPointerMove={tilt} onPointerLeave={resetTilt} onPointerCancel={resetTilt} onBlur={resetTilt}>
     <div className="project-visual"><div className="project-card-top"><span><Icon size={12}/>{project.label}</span><span>IX — {project.id}</span></div><div className="project-screen-wrap"><InterfaceScreen type={project.type}/></div><div className="project-visual-caption"><span>ENGINEERED TO EVOLVE</span><span>✧</span></div></div>
     <div className="project-info"><span className="project-category">{project.name}</span><h3>{project.title}<ArrowUpRight size={22}/></h3><p>{project.description}</p><div className="project-tags">{project.tags.map(t => <span key={t}>{t}</span>)}</div></div>
   </button>;
 }
 
+function ProjectGrid({ items, onSelect }) {
+  const gridRef = useRef(null);
+  const positions = useRef(new Map());
+  useLayoutEffect(() => {
+    const animations = [];
+    const next = new Map();
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    [...gridRef.current.children].forEach(card => {
+      const position = { x: card.offsetLeft, y: card.offsetTop };
+      const previous = positions.current.get(card.dataset.project);
+      next.set(card.dataset.project, position);
+      if (!previous || reduced.matches || !card.animate) return;
+      const x = previous.x - position.x;
+      const y = previous.y - position.y;
+      if (x || y) animations.push(card.animate([
+        { translate: `${x}px ${y}px` }, { translate: '0 0' },
+      ], { duration: 420, easing: 'cubic-bezier(.22, 1, .36, 1)' }));
+    });
+    positions.current = next;
+    const cancel = () => animations.forEach(animation => animation.cancel());
+    reduced.addEventListener('change', cancel);
+    return () => { cancel(); reduced.removeEventListener('change', cancel); };
+  }, [items]);
+  return <div ref={gridRef} className="projects-grid" aria-live="polite">{items.map(project => <ProjectCard key={project.id} project={project} onSelect={onSelect}/>)}</div>;
+}
+
 function ProjectModal({ project, onClose }) {
   const dialogRef = useRef(null);
-  useEffect(() => {
+  const closingRef = useRef(false);
+  function close() {
+    if (closingRef.current) return;
     const dialog = dialogRef.current;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !dialog.animate) {
+      onClose();
+      return;
+    }
+    closingRef.current = true;
+    dialog.classList.add('is-closing');
+    const animation = dialog.animate([
+      { opacity: 1, transform: 'translateY(0) scale(1)' },
+      { opacity: 0, transform: 'translateY(12px) scale(.985)' },
+    ], { duration: 180, easing: 'ease-in', fill: 'forwards' });
+    animation.finished.then(onClose).catch(() => {});
+  }
+  useLayoutEffect(() => {
+    const dialog = dialogRef.current;
+    const opener = document.activeElement;
     dialog.showModal();
     const previous = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    return () => { document.body.style.overflow = previous; };
+    return () => {
+      dialog.getAnimations().forEach(animation => animation.cancel());
+      dialog.close();
+      document.body.style.overflow = previous;
+      if (opener instanceof HTMLElement && opener.isConnected) opener.focus({ preventScroll: true });
+    };
   }, []);
-  return <dialog ref={dialogRef} className="project-modal" onCancel={onClose} onClick={e => { if (e.target === e.currentTarget) onClose(); }} aria-labelledby="modal-title"><button className="modal-close icon-button" onClick={onClose} aria-label="Cerrar proyecto"><X/></button><div className={`modal-visual card-${project.color}`}><InterfaceScreen type={project.type} large/></div><div className="modal-content"><SectionLabel>Concepto de aplicación / {project.id}</SectionLabel><h2 id="modal-title">{project.name}</h2><p>{project.detail}</p><h3>Alcance propuesto</h3><ul>{project.scope.map(item => <li key={item}><Check size={16}/>{item}</li>)}</ul><div className="project-tags">{project.tags.map(t => <span key={t}>{t}</span>)}</div><p className="concept-note">Visualización ilustrativa. El alcance y las tecnologías se definen según las necesidades de cada proyecto.</p><a className="button button-primary" href="#contacto" onClick={onClose}>Quiero una solución así <ArrowUpRight size={18}/></a></div></dialog>;
+  return <dialog ref={dialogRef} className="project-modal" onCancel={e => { e.preventDefault(); close(); }} onClick={e => { if (e.target === e.currentTarget) close(); }} aria-labelledby="modal-title"><button className="modal-close icon-button" onClick={close} aria-label="Cerrar proyecto"><X/></button><div className={`modal-visual card-${project.color}`}><InterfaceScreen type={project.type} large/></div><div className="modal-content"><SectionLabel>Concepto de aplicación / {project.id}</SectionLabel><h2 id="modal-title">{project.name}</h2><p>{project.detail}</p><h3>Alcance propuesto</h3><ul>{project.scope.map(item => <li key={item}><Check size={16}/>{item}</li>)}</ul><div className="project-tags">{project.tags.map(t => <span key={t}>{t}</span>)}</div><p className="concept-note">Visualización ilustrativa. El alcance y las tecnologías se definen según las necesidades de cada proyecto.</p><a className="button button-primary" href="#contacto" onClick={onClose}>Quiero una solución así <ArrowUpRight size={18}/></a></div></dialog>;
 }
 
 const services = [
@@ -78,7 +152,7 @@ const services = [
 function ServiceCard({ service }) {
   const [expanded, setExpanded] = useState(false);
   const Icon = service.icon;
-  return <article className={`service-card ${service.className}`}><div className="service-card-head"><div className="service-icon"><Icon strokeWidth={1.5}/></div><span>{service.number} /</span></div><h3>{service.title}</h3><p>{service.description}</p><ul>{service.points.map(point => <li key={point}><Check size={15}/>{point}</li>)}</ul><div id={`service-${service.number}`} hidden={!expanded} className="service-extra">{service.extra}</div><button className="text-link" onClick={() => setExpanded(!expanded)} aria-expanded={expanded} aria-controls={`service-${service.number}`}>{expanded ? 'Ver menos' : 'Explorar solución'}{expanded ? <Minus size={18}/> : <ArrowUpRight size={18}/>}</button></article>;
+  return <article className={`service-card ${service.className}`}><div className="service-card-head"><div className="service-icon"><Icon strokeWidth={1.5}/></div><span>{service.number} /</span></div><h3>{service.title}</h3><p>{service.description}</p><ul>{service.points.map(point => <li key={point}><Check size={15}/>{point}</li>)}</ul><div id={`service-${service.number}`} inert={!expanded} aria-hidden={!expanded} className={`service-extra ${expanded ? 'is-expanded' : ''}`}><div><p>{service.extra}</p></div></div><button className="text-link" onClick={() => setExpanded(!expanded)} aria-expanded={expanded} aria-controls={`service-${service.number}`}>{expanded ? 'Ver menos' : 'Explorar solución'}<Plus className="service-toggle" size={18}/></button></article>;
 }
 
 function ContactForm() {
@@ -124,20 +198,25 @@ function App() {
   const [showAll, setShowAll] = useState(false);
   const [selected, setSelected] = useState(null);
   const [activeSection, setActiveSection] = useState('');
+  const menuToggleRef = useRef(null);
+  usePageMotion(filter, showAll);
   useEffect(() => {
+    if (!window.IntersectionObserver) return;
     const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) setActiveSection(entry.target.id); }), { rootMargin: '-15% 0px -65% 0px' });
     document.querySelectorAll('main section[id]').forEach(section => observer.observe(section));
     return () => observer.disconnect();
   }, []);
   useEffect(() => {
     if (!menuOpen) return;
-    const onKey = e => { if (e.key === 'Escape') setMenuOpen(false); };
+    const onKey = e => { if (e.key === 'Escape') { setMenuOpen(false); menuToggleRef.current.focus(); } };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [menuOpen]);
-  const filteredProjects = projects.filter(p => filter === 'Todos' || p.category === filter);
-  const visibleProjects = showAll || filter !== 'Todos' ? filteredProjects : filteredProjects.slice(0, 3);
-  return <><a href="#main" className="skip-link">Saltar al contenido</a><header className="site-header"><div className="header-inner"><Brand/><nav className={menuOpen ? 'main-nav nav-open' : 'main-nav'} id="main-navigation" aria-label="Navegación principal">{navLinks.map(([name, id]) => <a className={activeSection === id ? 'active' : ''} href={`#${id}`} key={id} onClick={() => setMenuOpen(false)}>{name}</a>)}<a className="button button-small button-primary" href="#contacto" onClick={() => setMenuOpen(false)}>Hablemos de tu proyecto <ArrowUpRight size={16}/></a></nav><button className="menu-toggle icon-button" aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={menuOpen} aria-controls="main-navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X/> : <Menu/>}</button></div></header>
+  const visibleProjects = useMemo(() => {
+    const filtered = projects.filter(p => filter === 'Todos' || p.category === filter);
+    return showAll || filter !== 'Todos' ? filtered : filtered.slice(0, 3);
+  }, [filter, showAll]);
+  return <><a href="#main" className="skip-link">Saltar al contenido</a><header className="site-header"><div className="header-inner"><Brand/><nav className={menuOpen ? 'main-nav nav-open' : 'main-nav'} id="main-navigation" aria-label="Navegación principal">{navLinks.map(([name, id]) => <a className={activeSection === id ? 'active' : ''} aria-current={activeSection === id ? 'location' : undefined} href={`#${id}`} key={id} onClick={() => setMenuOpen(false)}>{name}</a>)}<a className="button button-small button-primary" href="#contacto" onClick={() => setMenuOpen(false)}>Hablemos de tu proyecto <ArrowUpRight size={16}/></a></nav><button ref={menuToggleRef} className="menu-toggle icon-button" aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={menuOpen} aria-controls="main-navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X/> : <Menu/>}</button></div><div className="scroll-progress" aria-hidden="true"/></header>
     <main id="main">
       <section className="hero" id="inicio">
         <img className="hero-image" src="https://images.pexels.com/photos/2569842/pexels-photo-2569842.jpeg?auto=compress&cs=tinysrgb&w=2400&q=85" alt="Equipos, tuberías e instrumentación para el control de procesos en una planta industrial" fetchPriority="high"/>
@@ -158,13 +237,15 @@ function App() {
         <div className="hero-bottom"><div className="container hero-bottom-inner"><span className="hero-bottom-label">INGENIERÍA EVOLUTIVA</span><div><span>01 <b>Energía</b></span><span>02 <b>Automatización</b></span><span>03 <b>Inteligencia industrial</b></span></div><a href="#nosotros" aria-label="Descubrir INGENIAX"><ArrowDown size={19}/></a></div></div>
       </section>
 
+      <Clients/>
+
       <section className="about section-pad" id="nosotros"><div className="container about-layout"><div><SectionLabel>SOMOS INGENIAX</SectionLabel><h2>Entendemos tu industria.<br/><span className="muted-heading">Diseñamos su evolución.</span></h2></div><div className="about-copy"><p>Somos una compañía colombiana que convierte los retos de la industria en <strong>soluciones de ingeniería reales.</strong></p><p>Integramos sistemas eléctricos, automatización y plataformas digitales para hacer que cada proceso funcione mejor. Escuchamos, diseñamos e implementamos. Siempre a la medida de tu operación.</p><a href="#servicios" className="text-link">Descubre cómo lo hacemos <ArrowUpRight size={18}/></a></div></div><div className="container about-bottom"><div><span className="small-cross">+</span><span>Una visión integral de la ingeniería</span></div><span>DE LA POTENCIA AL DATO, TODO CONECTADO.</span></div></section>
 
       <section className="services section-pad" id="servicios"><div className="container"><div className="section-heading"><div><SectionLabel>NUESTRAS SOLUCIONES</SectionLabel><h2>Tres especialidades.<br/>Infinitas posibilidades.</h2></div><p>La experiencia técnica que necesitas,<br/>integrada en un solo aliado.</p></div><div className="services-grid">{services.map(service => <ServiceCard key={service.number} service={service}/>)}</div><div className="services-bottom"><span><Layers3 size={18}/> ¿Tu reto combina varias especialidades?</span><a href="#contacto" className="text-link">Diseñemos una solución integral <ArrowRight size={17}/></a></div></div></section>
 
-      <section className="projects section-pad" id="proyectos"><div className="container"><div className="section-heading"><div><SectionLabel light>INGENIERÍA EN ACCIÓN</SectionLabel><h2>De los retos a<br/><span>las soluciones.</span></h2></div><div className="projects-intro"><p>Una mirada a lo que podemos crear.<br/>Explora aplicaciones que conectan nuestra<br className="desktop-break"/> experiencia con las necesidades de tu industria.</p><span><span className="live-dot"/> CONCEPTOS DE APLICACIÓN</span></div></div><div className="portfolio-toolbar"><div className="project-filters" role="group" aria-label="Filtrar proyectos">{['Todos', 'Automatización', 'IIoT', 'Eléctrica'].map(f => <button className={filter === f ? 'selected' : ''} aria-pressed={filter === f} key={f} onClick={() => { setFilter(f); setShowAll(false); }}>{f}{f === 'Todos' && <span>06</span>}</button>)}</div><span className="portfolio-hint"><Crosshair size={14}/> EXPLORA CADA SOLUCIÓN</span></div><div className="projects-grid" aria-live="polite">{visibleProjects.map(project => <ProjectCard key={project.id} project={project} onSelect={setSelected}/>)}</div><div className="projects-bottom"><p>Interfaces ilustrativas. Ingeniería con posibilidades reales.</p>{filter === 'Todos' && <button className="button button-dark-outline" onClick={() => setShowAll(!showAll)}>{showAll ? 'Ver proyectos destacados' : 'Explorar todos los conceptos'}{showAll ? <Minus size={16}/> : <Plus size={16}/>}</button>}{filter !== 'Todos' && <span className="filtered-count">{visibleProjects.length} {visibleProjects.length === 1 ? 'concepto' : 'conceptos'} de {filter}</span>}</div></div></section>
+      <section className="projects section-pad" id="proyectos"><div className="container"><div className="section-heading"><div><SectionLabel light>INGENIERÍA EN ACCIÓN</SectionLabel><h2>De los retos a<br/><span>las soluciones.</span></h2></div><div className="projects-intro"><p>Una mirada a lo que podemos crear.<br/>Explora aplicaciones que conectan nuestra<br className="desktop-break"/> experiencia con las necesidades de tu industria.</p><span><span className="live-dot"/> CONCEPTOS DE APLICACIÓN</span></div></div><div className="portfolio-toolbar"><div className="project-filters" role="group" aria-label="Filtrar proyectos">{['Todos', 'Automatización', 'IIoT', 'Eléctrica'].map(f => <button className={filter === f ? 'selected' : ''} aria-pressed={filter === f} key={f} onClick={() => { setFilter(f); setShowAll(false); }}>{f}{f === 'Todos' && <span>06</span>}</button>)}</div><span className="portfolio-hint"><Crosshair size={14}/> EXPLORA CADA SOLUCIÓN</span></div><ProjectGrid items={visibleProjects} onSelect={setSelected}/><div className="projects-bottom"><p>Interfaces ilustrativas. Ingeniería con posibilidades reales.</p>{filter === 'Todos' && <button className="button button-dark-outline" onClick={() => setShowAll(!showAll)}>{showAll ? 'Ver proyectos destacados' : 'Explorar todos los conceptos'}{showAll ? <Minus size={16}/> : <Plus size={16}/>}</button>}{filter !== 'Todos' && <span className="filtered-count">{visibleProjects.length} {visibleProjects.length === 1 ? 'concepto' : 'conceptos'} de {filter}</span>}</div></div></section>
 
-      <section className="technologies section-pad" id="tecnologias"><div className="container"><div className="technology-heading"><SectionLabel>UN ECOSISTEMA SIN FRONTERAS</SectionLabel><h2>Tecnología líder.<br/>Ingeniería que la hace posible.</h2><p>Trabajamos con tecnologías reconocidas para integrar<br className="desktop-break"/> soluciones robustas, escalables y alineadas a tu proceso.</p></div><div className="brand-ecosystem"><div className="technology-brand siemens">SIEMENS<small>Automatización y digitalización</small></div><div className="technology-brand schneider"><span>Schneider<em>Electric <span>▰</span></em></span><small>Energía y control industrial</small></div><div className="technology-brand rockwell"><span><span className="rockwell-mark">r</span><span>Rockwell<em>Automation</em></span></span><small>Control y conectividad</small></div></div><div className="technology-chips">{[[Cpu, 'PLC'], [PanelsTopLeft, 'HMI / SCADA'], [Network, 'Redes industriales'], [Cable, 'Tableros eléctricos'], [Gauge, 'Variadores / VFD'], [Activity, 'Adquisición de datos'], [Radio, 'Plataformas IIoT']].map(([Icon, text]) => <span key={text}><Icon size={15}/>{text}</span>)}</div><p className="brand-disclaimer">Marcas de referencia tecnológica. Sus nombres pertenecen a sus respectivos titulares.</p></div></section>
+      <section className="technologies section-pad" id="tecnologias"><div className="container"><div className="technology-heading"><SectionLabel>UN ECOSISTEMA SIN FRONTERAS</SectionLabel><h2>Tecnología líder.<br/>Ingeniería que la hace posible.</h2><p>Trabajamos con tecnologías reconocidas para integrar<br className="desktop-break"/> soluciones robustas, escalables y alineadas a tu proceso.</p></div><TechnologyBrands/><div className="technology-chips">{[[Cpu, 'PLC'], [PanelsTopLeft, 'HMI / SCADA'], [Network, 'Redes industriales'], [Cable, 'Tableros eléctricos'], [Gauge, 'Variadores / VFD'], [Activity, 'Adquisición de datos'], [Radio, 'Plataformas IIoT']].map(([Icon, text]) => <span key={text}><Icon size={15}/>{text}</span>)}</div><p className="brand-disclaimer">Marcas de referencia tecnológica. Sus nombres pertenecen a sus respectivos titulares.</p></div></section>
 
       <section className="why section-pad" id="valor"><div className="container why-layout"><div className="why-intro"><SectionLabel>EL DIFERENCIAL INGENIAX</SectionLabel><h2>No solo integramos<br/>tecnología.<br/><span className="muted-heading">Nos involucramos<br/>con tu operación.</span></h2><p>La mejor solución empieza por entender lo que realmente necesitas.</p><a href="#contacto" className="text-link">Conoce a tu próximo aliado <ArrowUpRight size={18}/></a><div className="engineering-stamp"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="40"/><circle cx="50" cy="50" r="27"/><path d="M50 3v20m0 54v20M3 50h20m54 0h20M35 50l10 10 22-23"/></svg><span>INGENIERÍA A LA MEDIDA<small>DISEÑADA PARA TU REALIDAD</small></span></div></div><div className="values-grid">{[[Crosshair, 'A la medida de tu proceso', 'Cada industria es diferente. Tu solución también debe serlo.'], [Workflow, 'Acompañamiento integral', 'Desde el diagnóstico y el diseño hasta la puesta en marcha.'], [Factory, 'Visión de planta', 'Entendemos los equipos, los procesos y los retos de la operación.'], [ShieldCheck, 'Respaldo técnico cercano', 'Comunicación directa y soporte ágil cuando lo necesitas.'], [ChartNoAxesCombined, 'Resultados que importan', 'Foco en la eficiencia, la visibilidad y el control de tu proceso.'], [Layers3, 'Integración de principio a fin', 'Electricidad, automatización y datos trabajando como un solo sistema.']].map(([Icon, title, desc], i) => <div className="value-block" key={title}><div><Icon size={23} strokeWidth={1.5}/><span>0{i + 1}</span></div><h3>{title}</h3><p>{desc}</p></div>)}</div></div></section>
 
