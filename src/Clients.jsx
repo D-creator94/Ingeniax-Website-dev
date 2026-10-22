@@ -18,8 +18,8 @@ export default function Clients() {
       <div className="container">
         <div className="clients-heading">
           <div>
-            <div className="eyebrow"><span />CONFIANZA QUE NOS IMPULSA</div>
-            <h2 id="clients-title">Clientes</h2>
+            <div className="eyebrow"><span />NUESTRA EXPERIENCIA</div>
+            <h2 id="clients-title">Clientes y referencias</h2>
             <p>Empresas que confían en nuestra ingeniería.</p>
           </div>
         </div>

@@ -71,3 +71,17 @@
   .hero-marquee-group > span { white-space: normal; padding: 12px 18px; }
   .hero-marquee-group[aria-hidden="true"] { display: none; }
 }
+
+/* Six industry sectors, in the same reading order on every screen size. */
+.industry-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+@media (max-width: 767px) {
+  .industry-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .industry-grid > div:nth-child(n) { grid-column: auto; }
+  .industry-grid > div:nth-child(3n + 1) { border-left: 0; }
+  .industry-grid > div:nth-child(5) { border-left: 1px solid var(--line); }
+}
+@media (max-width: 420px) {
+  .industry-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .industry-grid > div:nth-child(n) { border-left: 1px solid var(--line); }
+  .industry-grid > div:nth-child(odd) { border-left: 0; }
+}
