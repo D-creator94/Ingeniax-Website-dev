@@ -3,11 +3,21 @@ import { createRoot } from 'react-dom/client';
 import { ArrowUpRight, ArrowRight, ArrowDown, Menu, X, Zap, Cpu, Network, Check, Plus, Minus, Layers3, Settings2, Activity, Gauge, Radio, ShieldCheck, Cable, Factory, Package, Wheat, Droplets, Phone, Mail, MapPin, Globe, Crosshair, Workflow, ChartNoAxesCombined, PanelsTopLeft } from 'lucide-react';
 import './styles.css';
 import './motion.css';
+import './header-hero.css';
 import { brandLogo, brandLogoLight, technologies } from './brands';
 import { usePageMotion } from './usePageMotion';
 import Clients from './Clients';
 
-const navLinks = [['Clientes', 'clientes'], ['Nosotros', 'nosotros'], ['Servicios', 'servicios'], ['Proyectos', 'proyectos'], ['Tecnologías', 'tecnologias']];
+const navLinks = [['Nosotros', 'nosotros'], ['Servicios', 'servicios'], ['Experiencia', 'proyectos'], ['Tecnologías', 'tecnologias'], ['Sectores', 'sectores']];
+
+
+// Source: Perfil Corporativo Ingeniax S.A.S., pages 3–4.
+const profileServices = [
+  'Automatización y control industrial', 'Programación de PLC, HMI y SCADA',
+  'Modernización tecnológica (Retrofit)', 'Aplicaciones IIoT',
+  'Monitoreo en tiempo real', 'Integración OT / IT',
+  'Tableros eléctricos de potencia y control', 'Puesta en marcha y soporte postventa',
+];
 
 function Brand({ light = false }) {
   const [source, setSource] = useState(light ? brandLogoLight : brandLogo);
@@ -232,25 +242,24 @@ function App() {
     const filtered = projects.filter(p => filter === 'Todos' || p.category === filter);
     return showAll || filter !== 'Todos' ? filtered : filtered.slice(0, 3);
   }, [filter, showAll]);
-  return <><a href="#main" className="skip-link">Saltar al contenido</a><header className="site-header"><div className="header-inner"><Brand/><nav className={menuOpen ? 'main-nav nav-open' : 'main-nav'} id="main-navigation" aria-label="Navegación principal">{navLinks.map(([name, id]) => <a className={activeSection === id ? 'active' : ''} aria-current={activeSection === id ? 'location' : undefined} href={`#${id}`} key={id} onClick={() => setMenuOpen(false)}>{name}</a>)}<a className="button button-small button-primary" href="#contacto" onClick={() => setMenuOpen(false)}>Hablemos de tu proyecto <ArrowUpRight size={16}/></a></nav><button ref={menuToggleRef} className="menu-toggle icon-button" aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={menuOpen} aria-controls="main-navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X/> : <Menu/>}</button></div><div className="scroll-progress" aria-hidden="true"/></header>
+  return <><a href="#main" className="skip-link">Saltar al contenido</a><header className="site-header"><div className="header-inner"><div className="header-identity"><Brand/><p className="header-tagline">Soluciones de ingeniería para industrias eficientes e innovadoras</p></div><nav className={menuOpen ? 'main-nav nav-open' : 'main-nav'} id="main-navigation" aria-label="Navegación principal">{navLinks.map(([name, id]) => <a className={activeSection === id ? 'active' : ''} aria-current={activeSection === id ? 'location' : undefined} href={`#${id}`} key={id} onClick={() => setMenuOpen(false)}>{name}</a>)}<a className="button button-small button-primary" href="#contacto" onClick={() => setMenuOpen(false)}>Hablemos de tu proyecto <ArrowUpRight size={16}/></a></nav><a className="header-contact button button-small button-primary" href="#contacto">Hablemos de tu proyecto <ArrowUpRight size={16}/></a><button ref={menuToggleRef} className="menu-toggle icon-button" aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={menuOpen} aria-controls="main-navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X/> : <Menu/>}</button></div><div className="scroll-progress" aria-hidden="true"/></header>
     <main id="main">
       <section className="hero" id="inicio">
-        <img className="hero-image" src="https://images.pexels.com/photos/2569842/pexels-photo-2569842.jpeg?auto=compress&cs=tinysrgb&w=2400&q=85" alt="Equipos, tuberías e instrumentación para el control de procesos en una planta industrial" fetchPriority="high"/>
+        <img className="hero-image" src={`${import.meta.env.BASE_URL}images/ingeniax-control-industrial.png`} alt="Profesional de INGENIAX supervisando procesos industriales en pantallas de control" fetchPriority="high"/>
         <div className="hero-overlay"/><div className="hero-grid"/>
         <div className="container hero-content">
           <div className="hero-copy">
-            <SectionLabel light>INGENIERÍA COLOMBIANA. VISIÓN SIN LÍMITES.</SectionLabel>
+            <SectionLabel light>Automatización Industrial - IOT - Tableros eléctricos - Ciencia de datos</SectionLabel>
             <h1>Ingeniería que<br/>impulsa tu<br/><span>industria.</span></h1>
-            <p>Conectamos la energía, el control y los datos para transformar tu operación. Soluciones a la medida, diseñadas para evolucionar contigo.</p>
             <div className="hero-actions">
               <a href="#contacto" className="button button-primary">Desarrollemos tu proyecto <ArrowUpRight size={18}/></a>
               <a href="#proyectos" className="button button-outline">Explora nuestras soluciones <ArrowRight size={17}/></a>
             </div>
-            <div className="hero-assurance"><span><ShieldCheck size={16}/> Ingeniería con propósito</span><span className="assurance-divider"/><span>De la idea a la puesta en marcha</span></div>
           </div>
-          <div className="hero-tech-note"><span className="tech-cross">+</span><div><span className="tech-status"><i/> EL FUTURO SE INTEGRA HOY</span><p>Más conexión.<br/><strong>Más posibilidades.</strong></p><span className="tech-coordinates">ENERGÍA / CONTROL / DATOS</span></div><ArrowUpRight size={25}/></div>
         </div>
-        <div className="hero-bottom"><div className="container hero-bottom-inner"><span className="hero-bottom-label">INGENIERÍA EVOLUTIVA</span><div><span>01 <b>Energía</b></span><span>02 <b>Automatización</b></span><span>03 <b>Inteligencia industrial</b></span></div><a href="#nosotros" aria-label="Descubrir INGENIAX"><ArrowDown size={19}/></a></div></div>
+        <div className="hero-marquee" role="region" aria-label="Servicios de INGENIAX" tabIndex={0}>
+          <div className="hero-marquee-track">{[0, 1].map(copy => <div className="hero-marquee-group" key={copy} aria-hidden={copy === 1 ? true : undefined}>{profileServices.map(text => <span key={text}><span className="marquee-separator" aria-hidden="true">✦</span>{text}</span>)}</div>)}</div>
+        </div>
       </section>
 
       <Clients/>
@@ -265,7 +274,7 @@ function App() {
 
       <section className="why section-pad" id="valor"><div className="container why-layout"><div className="why-intro"><SectionLabel>EL DIFERENCIAL INGENIAX</SectionLabel><h2>No solo integramos<br/>tecnología.<br/><span className="muted-heading">Nos involucramos<br/>con tu operación.</span></h2><p>La mejor solución empieza por entender lo que realmente necesitas.</p><a href="#contacto" className="text-link">Conoce a tu próximo aliado <ArrowUpRight size={18}/></a><div className="engineering-stamp"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="40"/><circle cx="50" cy="50" r="27"/><path d="M50 3v20m0 54v20M3 50h20m54 0h20M35 50l10 10 22-23"/></svg><span>INGENIERÍA A LA MEDIDA<small>DISEÑADA PARA TU REALIDAD</small></span></div></div><div className="values-grid">{[[Crosshair, 'A la medida de tu proceso', 'Cada industria es diferente. Tu solución también debe serlo.'], [Workflow, 'Acompañamiento integral', 'Desde el diagnóstico y el diseño hasta la puesta en marcha.'], [Factory, 'Visión de planta', 'Entendemos los equipos, los procesos y los retos de la operación.'], [ShieldCheck, 'Respaldo técnico cercano', 'Comunicación directa y soporte ágil cuando lo necesitas.'], [ChartNoAxesCombined, 'Resultados que importan', 'Foco en la eficiencia, la visibilidad y el control de tu proceso.'], [Layers3, 'Integración de principio a fin', 'Electricidad, automatización y datos trabajando como un solo sistema.']].map(([Icon, title, desc], i) => <div className="value-block" key={title}><div><Icon size={23} strokeWidth={1.5}/><span>0{i + 1}</span></div><h3>{title}</h3><p>{desc}</p></div>)}</div></div></section>
 
-      <section className="industries"><div className="container"><div className="industries-heading"><SectionLabel>DONDE LA INDUSTRIA EVOLUCIONA</SectionLabel><h2>Diferentes sectores. La misma precisión.</h2><p>Soluciones adaptables a los desafíos de cada industria.</p></div><div className="industry-grid">{[[Wheat, 'Alimentos y bebidas'], [Factory, 'Manufactura'], [Package, 'Empaque y embalaje'], [Droplets, 'Agua y servicios'], [Zap, 'Energía e infraestructura']].map(([Icon, text]) => <div key={text}><Icon size={29} strokeWidth={1.4}/><span>{text}</span></div>)}</div></div></section>
+      <section className="industries" id="sectores"><div className="container"><div className="industries-heading"><SectionLabel>DONDE LA INDUSTRIA EVOLUCIONA</SectionLabel><h2>Diferentes sectores. La misma precisión.</h2><p>Soluciones adaptables a los desafíos de cada industria.</p></div><div className="industry-grid">{[[Wheat, 'Alimentos y bebidas'], [Factory, 'Manufactura'], [Package, 'Empaque y embalaje'], [Droplets, 'Agua y servicios'], [Zap, 'Energía e infraestructura']].map(([Icon, text]) => <div key={text}><Icon size={29} strokeWidth={1.4}/><span>{text}</span></div>)}</div></div></section>
 
       <section className="contact section-pad" id="contacto"><div className="contact-grid-decoration"/><div className="container contact-layout"><div className="contact-copy"><SectionLabel light>CONECTEMOS IDEAS</SectionLabel><h2>Tu próximo reto.<br/><span>Nuestra próxima<br/>solución.</span></h2><p>Hablemos de ese proceso que quieres mejorar,<br className="desktop-break"/> conectar o transformar. Estamos para escucharte.</p><div className="contact-details"><a href="tel:+573243383543"><span className="contact-icon"><Phone size={19}/></span><span><small>LLÁMANOS</small>+57 324 338 3543</span><ArrowUpRight size={17}/></a><a href="mailto:info@ingeniax.com.co"><span className="contact-icon"><Mail size={19}/></span><span><small>ESCRÍBENOS</small>info@ingeniax.com.co</span><ArrowUpRight size={17}/></a><div><span className="contact-icon"><MapPin size={19}/></span><span><small>ENCUÉNTRANOS</small>Cll. 116 No. 42B – 91<em>Colombia</em></span></div><a href="https://www.ingeniax.com.co" target="_blank" rel="noreferrer"><span className="contact-icon"><Globe size={19}/></span><span><small>NUESTRO SITIO WEB</small>www.ingeniax.com.co</span><ArrowUpRight size={17}/></a></div><div className="contact-signoff"><span className="live-dot"/> INGENIERÍA COLOMBIANA, CONECTADA CONTIGO.</div></div><ContactForm/></div></section>
     </main><footer className="footer"><div className="container footer-main"><Brand light/><p>Energía que conecta. Control que transforma.<br/>Ingeniería que evoluciona.</p><a href="#inicio" className="back-top">Volver arriba <ArrowUpRight size={18}/></a></div><div className="container footer-bottom"><span>© {new Date().getFullYear()} INGENIAX S.A.S. Todos los derechos reservados.</span><span>Hecho para una industria en evolución.<span className="colombia-flag"><i/><i/><i/></span></span></div></footer>{selected && <ProjectModal project={selected} onClose={() => setSelected(null)}/>}</>;
