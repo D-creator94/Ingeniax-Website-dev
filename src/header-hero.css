@@ -1,5 +1,9 @@
 /* Center the section links independently of the logo and contact action. */
 .header-contact { display: none; }
+.whatsapp-float { position: fixed; right: max(24px, env(safe-area-inset-right)); bottom: max(24px, env(safe-area-inset-bottom)); z-index: 90; display: grid; place-items: center; width: 54px; height: 54px; color: #16bd66; background: #effaf4; border: 6px solid #fff; border-radius: 50%; box-shadow: 0 5px 24px #102d3526; transition: transform .2s, box-shadow .2s; }
+.whatsapp-float:hover { transform: translateY(-3px); box-shadow: 0 8px 28px #102d3538; }
+.whatsapp-float:focus-visible { outline: 3px solid #168c52; outline-offset: 4px; }
+@media (max-width: 767px) { .whatsapp-float { right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); } }
 .hero .eyebrow { font-size: 16px; line-height: 1.7; letter-spacing: .5px; max-width: 720px; }
 .hero .eyebrow > span { flex-shrink: 0; }
 
