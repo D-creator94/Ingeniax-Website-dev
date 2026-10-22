@@ -15,12 +15,14 @@ async function withServer(options, run) {
 test('sends only to test inbox, sets reply-to, and includes project details', async () => {
   let mail;
   await withServer({ sendMail: async value => { mail = value; return { accepted: [recipient] }; } }, async post => {
-    const response = await post({ ...valid, to: 'injected@example.com' });
+    const response = await post({ ...valid, service: 'Ciencia de datos', phone: '+57 300 123 4567', to: 'injected@example.com' });
     assert.equal(response.status, 200);
     assert.deepEqual(await response.json(), { ok: true });
     assert.equal(mail.to, 'proyectos@ingeniax.com.co');
     assert.equal(mail.replyTo, valid.email);
     assert.ok(mail.text.includes(valid.message));
+    assert.ok(mail.text.includes('Servicio: Ciencia de datos'));
+    assert.ok(mail.text.includes('Teléfono: +57 300 123 4567'));
   });
 });
 test('rejects invalid fields, spam trap, and unapproved origin before sending', async () => {
@@ -47,5 +49,18 @@ test('limits repeated submissions', async () => {
   await withServer({}, async post => {
     for (let i = 0; i < 5; i++) await post(valid);
     assert.equal((await post(valid)).status, 429);
+  });
+});
+
+test('phone is optional and malformed phone values never reach SMTP', async () => {
+  const mails = [];
+  await withServer({ sendMail: async mail => { mails.push(mail); return { accepted: [recipient] }; } }, async post => {
+    assert.equal((await post(valid)).status, 200);
+    assert.ok(mails[0].text.includes('Teléfono: No especificado'));
+    assert.equal((await post({ ...valid, phone: '' })).status, 200);
+    for (const phone of ['123', '3001234567\nInjected', '1'.repeat(41)]) {
+      assert.equal((await post({ ...valid, phone })).status, 400);
+    }
+    assert.equal(mails.length, 2);
   });
 });

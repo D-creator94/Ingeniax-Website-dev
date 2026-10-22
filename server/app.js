@@ -2,7 +2,7 @@ import express from 'express';
 import rateLimit from 'express-rate-limit';
 
 export const recipient = 'proyectos@ingeniax.com.co';
-const services = ['', 'Soluciones Eléctricas Industriales', 'Automatización y Control', 'Desarrollo de Plataformas IIoT', 'Consultoría / Proyecto integral'];
+const services = ['', 'Soluciones Eléctricas Industriales', 'Automatización y Control', 'Desarrollo de Plataformas IIoT', 'Ciencia de datos', 'Consultoría / Proyecto integral'];
 
 export function createApp({ sendMail, from, origin }) {
   const app = express();
@@ -23,23 +23,24 @@ export function createApp({ sendMail, from, origin }) {
     const data = req.body;
     if (!data || typeof data !== 'object' || Array.isArray(data)) return res.status(400).json({ ok: false });
     if (data.website) return res.status(400).json({ ok: false });
-    const limits = { name: 120, company: 150, email: 180, service: 100, message: 4000 };
+    const limits = { name: 120, company: 150, email: 180, phone: 40, service: 100, message: 4000 };
     const fields = {};
     for (const [key, limit] of Object.entries(limits)) {
       const value = data[key] ?? '';
       if (typeof value !== 'string' || value.length > limit) return res.status(400).json({ ok: false });
       fields[key] = value.trim();
     }
-    const { name, company, email, service, message } = fields;
+    const { name, company, email, phone, service, message } = fields;
     if (!name || !message || !/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email) || /[\r\n]/.test(name + company) || !services.includes(service)) {
       return res.status(400).json({ ok: false });
     }
+    if (phone && (!/^[+0-9(). \-]+$/.test(phone) || (phone.match(/[0-9]/g) || []).length < 7 || (phone.match(/[0-9]/g) || []).length > 15)) return res.status(400).json({ ok: false });
     if (!sendMail || !from) return res.status(503).json({ ok: false });
     try {
       const result = await sendMail({
         from, to: recipient, replyTo: email,
         subject: `Consulta de ingeniería — ${company || name}`,
-        text: `Nombre: ${name}\nEmpresa: ${company || 'No especificada'}\nCorreo: ${email}\nServicio: ${service || 'No especificado'}\n\nProyecto:\n${message}`,
+        text: `Nombre: ${name}\nEmpresa: ${company || 'No especificada'}\nCorreo: ${email}\nTeléfono: ${phone || 'No especificado'}\nServicio: ${service || 'No especificado'}\n\nProyecto:\n${message}`,
       });
       if (!result.accepted?.some(address => address.toLowerCase() === recipient)) throw new Error('Recipient rejected');
       res.json({ ok: true });

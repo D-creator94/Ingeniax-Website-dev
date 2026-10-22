@@ -23,6 +23,9 @@ Archivos descargados de las siguientes fuentes, sin redibujar ni recolorear:
 | `siemens.svg` | https://commons.wikimedia.org/wiki/File:Siemens-logo.svg |
 | `schneider-electric.svg` | https://commons.wikimedia.org/wiki/File:Schneider_Electric_2007.svg |
 | `rockwell-automation.svg` | https://www.rockwellautomation.com/content/dam/rockwell-automation/sites/images/logos/2019_Logo_rgb_RA_Bug-LeftText_color.svg |
+| `delta.png` | https://www.deltaww.com/images/delta_logo.png |
+
+Delta Electronics: descargado del sitio oficial el 22 de octubre de 2026. PNG transparente original, sin redibujar ni recolorear; se conserva su proporción y se presenta en el mismo contenedor visual que los demás logos.
 
 Consultados el 13 de octubre de 2026. Wikimedia identifica los dos primeros como
 `PD-textlogo`; la fuente documentada de Schneider es su informe corporativo de

@@ -13,6 +13,12 @@
 .technology-logo-slot img { display: block; width: 100%; max-width: 240px; height: 72px; object-fit: contain; }
 .technology-logo-slot .logo-siemens { max-width: 205px; }
 .technology-logo-slot .logo-schneider { max-width: 220px; }
+.technology-logo-slot .logo-delta { max-width: 185px; }
+.brand-ecosystem { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 767px) {
+  .brand-ecosystem { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 28px; }
+  .technology-brand:nth-child(odd) { border-left: 0; }
+}
 
 /* The observer adds this class only when motion is supported and enabled. */
 .reveal-pending { opacity: 0; }
