@@ -7,6 +7,7 @@ import './header-hero.css';
 import { brandLogo, brandLogoLight, technologies } from './brands';
 import { usePageMotion } from './usePageMotion';
 import Clients from './Clients';
+import GearMethodology from './GearMethodology';
 
 const navLinks = [['Nosotros', 'nosotros'], ['Servicios', 'servicios'], ['Experiencia', 'proyectos'], ['Tecnologías', 'tecnologias'], ['Sectores', 'sectores']];
 
@@ -263,6 +264,7 @@ function App() {
       </section>
 
       <Clients/>
+      <GearMethodology/>
 
       <section className="about section-pad" id="nosotros"><div className="container about-layout"><div><SectionLabel>SOMOS INGENIAX</SectionLabel><h2>Entendemos tu industria.<br/><span className="muted-heading">Diseñamos su evolución.</span></h2></div><div className="about-copy"><p>Somos una compañía colombiana que convierte los retos de la industria en <strong>soluciones de ingeniería reales.</strong></p><p>Integramos sistemas eléctricos, automatización y plataformas digitales para hacer que cada proceso funcione mejor. Escuchamos, diseñamos e implementamos. Siempre a la medida de tu operación.</p><a href="#servicios" className="text-link">Descubre cómo lo hacemos <ArrowUpRight size={18}/></a></div></div><div className="container about-bottom"><div><span className="small-cross">+</span><span>Una visión integral de la ingeniería</span></div><span>DE LA POTENCIA AL DATO, TODO CONECTADO.</span></div></section>
 
