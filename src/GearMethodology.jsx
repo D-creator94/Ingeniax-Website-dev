@@ -43,8 +43,7 @@ function Gear({ stage, index, active, id, bodyRef, select, engage, disengage }) 
       {[0, 90, 180, 270].map(a => <circle key={a} cx={Math.cos(a * Math.PI / 180) * (radius - 15)} cy={Math.sin(a * Math.PI / 180) * (radius - 15)} r="2" fill="#d8ebfa"/>)}
     </g>
     <circle r={radius * .52} fill={color} stroke={light} strokeOpacity=".7"/>
-    <text className="gear-letter" y="5" fontSize={radius * .57}>{letter}</text>
-    <text className="gear-name" y={radius * .32} fontSize={radius < 65 ? 8 : 11}>{name}</text>
+    <text className="gear-letter" x="0" y="0" fontSize={radius * .57}>{letter}</text>
   </g>;
 }
 

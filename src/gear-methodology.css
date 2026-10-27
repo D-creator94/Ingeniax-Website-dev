@@ -11,9 +11,7 @@
 .gear-halo { opacity: 0; transition: opacity .25s; }
 .gear-control.is-active .gear-halo { opacity: 1; filter: drop-shadow(0 0 5px var(--gear-accent)); }
 .gear-control:focus-visible .gear-halo { opacity: 1; stroke: #142a47; stroke-width: 3; stroke-dasharray: 4 3; }
-.gear-letter, .gear-name { fill: white; text-anchor: middle; pointer-events: none; }
-.gear-letter { font-weight: 750; dominant-baseline: middle; }
-.gear-name { font-weight: 550; letter-spacing: .5px; }
+.gear-letter { fill: white; text-anchor: middle; pointer-events: none; font-weight: 750; dominant-baseline: central; }
 .gear-hint { text-align: center; font-size: 11px; color: #71849c; margin-top: 10px; }
 .gear-panel { background: #fff; border: 1px solid #dfe7f1; border-radius: 12px; padding: 28px; box-shadow: 0 16px 45px #173a6310; }
 .gear-panel-top { display: flex; justify-content: space-between; color: #69809c; font-family: var(--mono); font-size: 9px; letter-spacing: 1px; }

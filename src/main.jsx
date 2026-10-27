@@ -1,4 +1,4 @@
-import React, { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Ship, Anvil, ArrowUpRight, ArrowRight, ArrowDown, Menu, X, Zap, Cpu, Network, Check, Plus, Minus, Layers3, Settings2, Activity, Gauge, Radio, ShieldCheck, Cable, Factory, Package, Wheat, Droplets, Phone, Mail, MapPin, Globe, Crosshair, Workflow, ChartNoAxesCombined, PanelsTopLeft } from 'lucide-react';
 import './styles.css';
@@ -10,6 +10,9 @@ import Clients from './Clients';
 import ServiceCircuits from './ServiceCircuits';
 import BackgroundGears from './BackgroundGears';
 import GearMethodology from './GearMethodology';
+import { projects } from './projects';
+import ProjectCarousel from './ProjectCarousel';
+import './projects.css';
 
 const navLinks = [['Nosotros', 'nosotros'], ['Servicios', 'servicios'], ['Experiencia', 'experiencia'], ['Tecnologías', 'tecnologias'], ['Sectores', 'sectores']];
 
@@ -43,31 +46,6 @@ function SectionLabel({ children, light = false }) {
   return <div className={`eyebrow ${light ? 'eyebrow-light' : ''}`}><span />{children}</div>;
 }
 
-const projects = [
-  { id: '01', category: 'Automatización', label: 'AUTOMATIZACIÓN & CONTROL', title: 'Precisión en cada mezcla.', name: 'Sistema de dosificación y mezcla', description: 'Control de recetas, dosificación y variables de proceso desde una interfaz unificada.', tags: ['PLC Siemens', 'HMI', 'TIA Portal'], type: 'process', color: 'cyan', icon: Workflow, detail: 'Un concepto de automatización para coordinar la dosificación de materias primas y las etapas de mezcla. La interfaz permite consultar el estado de los tanques, ajustar recetas y visualizar las variables críticas del proceso.', scope: ['Control secuencial de dosificación y mezcla', 'Gestión de recetas y parámetros de operación', 'Visualización de niveles, alarmas y estados'] },
-  { id: '02', category: 'IIoT', label: 'INTELIGENCIA INDUSTRIAL', title: 'Tu planta, en perspectiva.', name: 'Dashboard de producción y OEE', description: 'Indicadores claros para entender el rendimiento y encontrar oportunidades de mejora.', tags: ['IIoT', 'OEE', 'Data Analytics'], type: 'dashboard', color: 'purple', icon: ChartNoAxesCombined, detail: 'Una propuesta de plataforma para transformar los datos de producción en información accionable. Reúne disponibilidad, rendimiento y calidad en una vista diseñada para los equipos de operación y gestión.', scope: ['Adquisición y contextualización de datos', 'Visualización de KPI y tendencias de producción', 'Análisis de disponibilidad, rendimiento y calidad'] },
-  { id: '03', category: 'Automatización', label: 'SUPERVISIÓN DE PROCESOS', title: 'Control que evoluciona.', name: 'Modernización de sistema SCADA', description: 'Una nueva experiencia de supervisión para procesos más conectados y confiables.', tags: ['SCADA', 'Schneider', 'Modbus TCP'], type: 'scada', color: 'blue', icon: PanelsTopLeft, detail: 'Un concepto de modernización que organiza la información de proceso en pantallas claras y consistentes. Integra tendencias, estados de equipos y gestión de alarmas para facilitar la supervisión de planta.', scope: ['Diseño de pantallas de supervisión', 'Integración de equipos y redes industriales', 'Históricos, tendencias y gestión de alarmas'] },
-  { id: '04', category: 'IIoT', label: 'TRAZABILIDAD INDUSTRIAL', title: 'Cada dato cuenta.', name: 'Plataforma de trazabilidad', description: 'Conexión entre materias primas, lotes y producción a lo largo del proceso.', tags: ['IIoT', 'SQL', 'Adquisición de datos'], type: 'trace', color: 'cyan', icon: Network, detail: 'Una aplicación conceptual para seguir el recorrido de los materiales desde su recepción hasta el producto terminado. Unifica registros de lote, etapas de proceso y consultas de información.', scope: ['Registro de materias primas y lotes', 'Seguimiento de etapas de producción', 'Consulta de datos e historial de proceso'] },
-  { id: '05', category: 'Eléctrica', label: 'INGENIERÍA ELÉCTRICA', title: 'La energía bajo control.', name: 'Integración de tableros eléctricos', description: 'Distribución, protección y monitoreo eléctrico integrados a la operación.', tags: ['Baja tensión', 'VFD', 'Tableros'], type: 'electrical', color: 'blue', icon: Zap, detail: 'Un concepto de integración de tableros de potencia y control, con selección de protecciones, variadores e instrumentación según las necesidades del proceso industrial.', scope: ['Diseño de tableros de potencia y control', 'Integración de variadores de frecuencia', 'Cableado, pruebas y puesta en marcha'] },
-  { id: '06', category: 'Automatización', label: 'PRODUCCIÓN CONECTADA', title: 'Una línea. Todo conectado.', name: 'Control de línea de producción', description: 'Equipos sincronizados y una operación centralizada desde el HMI.', tags: ['Rockwell', 'PLC', 'EtherNet/IP'], type: 'line', color: 'purple', icon: Settings2, detail: 'Una propuesta para coordinar estaciones de trabajo, transportadores y equipos de una línea de producción. Centraliza los estados operativos y simplifica la interacción con el proceso.', scope: ['Secuencias e interbloqueos de equipos', 'Interfaz de operación centralizada', 'Diagnóstico y monitoreo de la línea'] },
-];
-
-function MiniChart({ alternate = false }) {
-  const gradientId = useId();
-  return <svg className="mini-chart" viewBox="0 0 300 75" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={alternate ? '#a58bff' : '#44d5cb'} stopOpacity=".28"/><stop offset="100%" stopColor="#44d5cb" stopOpacity="0"/></linearGradient></defs><path d="M0 65 15 54 30 58 45 39 60 44 75 35 90 40 105 21 120 30 135 24 150 31 165 16 180 23 195 12 210 24 225 14 240 17 255 7 270 15 285 4 300 10V75H0Z" fill={`url(#${gradientId})`}/><path d="m0 65 15-11 15 4 15-19 15 5 15-9 15 5 15-19 15 9 15-6 15 7 15-15 15 7 15-11 15 12 15-10 15 3 15-10 15 8 15-11 15 6" fill="none" stroke={alternate ? '#a58bff' : '#44d5cb'} strokeWidth="2"/></svg>;
-}
-
-function InterfaceScreen({ type = 'process', large = false }) {
-  const isData = ['dashboard', 'trace'].includes(type);
-  return <div className={`interface-screen ${large ? 'screen-large' : ''}`} aria-label={`Visualización ilustrativa de ${isData ? 'dashboard industrial' : 'sistema de control'}`}>
-    <div className="screen-top"><span><span className="screen-logo">IX</span> {isData ? 'INSIGHT' : 'PROCESS'}<b> / {type === 'process' ? 'MIXING CONTROL' : type === 'scada' ? 'PLANT OVERVIEW' : type === 'trace' ? 'TRACEABILITY' : type === 'electrical' ? 'POWER CONTROL' : type === 'line' ? 'LINE CONTROL' : 'PRODUCTION ANALYTICS'}</b></span><span className="screen-status"><i/> DEMO</span></div>
-    <div className="screen-body"><aside className="screen-sidebar"><PanelsTopLeft/><Activity/><Layers3/><Settings2/><span>IX</span></aside><div className="screen-content"><div className="screen-heading"><span>{isData ? 'Resumen de producción' : type === 'electrical' ? 'Distribución eléctrica' : 'Vista general del proceso'}<small>PLANTA 01 / VISTA EN TIEMPO REAL</small></span><span className="screen-date">12:45:08 <i/></span></div>
-      {isData ? <><div className="screen-metrics"><div><small>OEE GLOBAL</small><strong>87.6<em>%</em></strong><span>↗ 4.2% vs. anterior</span></div><div><small>PRODUCCIÓN</small><strong>2,480</strong><span>unidades / turno</span></div><div><small>DISPONIBILIDAD</small><strong>96.2<em>%</em></strong><span>Dentro del objetivo</span></div></div><div className="data-bottom"><div className="chart-panel"><span>{type === 'trace' ? 'Seguimiento de lotes' : 'Rendimiento del turno'}<small>HOY</small></span><MiniChart alternate/><div className="chart-times"><span>06:00</span><span>10:00</span><span>14:00</span><span>18:00</span></div></div><div className="ring-panel"><div className="oee-ring"><strong>87.6<small>OEE</small></strong></div><span>Eficiencia global</span></div></div></> : <><div className="process-diagram"><svg className="process-pipes" viewBox="0 0 360 130" preserveAspectRatio="none" aria-hidden="true"><path d="M58 40v67h245V40M179 62v45M58 76h121"/><path className="pipe-active" d="M58 40v67h245V40M179 62v45"/><circle cx="179" cy="107" r="5"/><circle cx="303" cy="77" r="5"/></svg>{[0, 1, 2].map((n) => <div className={`tank tank-${n}`} key={n}><small>{type === 'electrical' ? `TABLERO 0${n + 1}` : type === 'line' ? `ESTACIÓN 0${n + 1}` : ['TANQUE A', 'REACTOR M-01', 'TANQUE B'][n]}</small><div className={`tank-vessel ${type === 'electrical' ? 'electric-vessel' : ''}`}>{type === 'electrical' ? <Zap/> : <><div className="tank-fluid" style={{ height: `${[65, 44, 78][n]}%` }}/><div className="tank-stem"/></>}<strong>{type === 'electrical' ? ['220', '440', '220'][n] + ' V' : ['65', '44', '78'][n] + '%'}</strong></div><span><i/>{n === 1 ? 'EN OPERACIÓN' : 'DISPONIBLE'}</span></div>)}</div><div className="process-values"><span><small>{type === 'electrical' ? 'POTENCIA' : 'TEMPERATURA'}</small><b>{type === 'electrical' ? '124 kW' : '42.5 °C'}</b></span><span><small>{type === 'electrical' ? 'FRECUENCIA' : 'PRESIÓN'}</small><b>{type === 'electrical' ? '60 Hz' : '2.4 bar'}</b></span><span><small>ESTADO</small><b className="value-green">Sistema estable</b></span><Activity/></div></>}
-      <div className="screen-bottom"><span><i/> Conexión estable <b>•</b> Datos ilustrativos</span><span>INGENIAX SYSTEMS</span></div>
-    </div></div>
-  </div>;
-}
-
 function ProjectCard({ project, onSelect }) {
   const Icon = project.icon;
   const frameRef = useRef(0);
@@ -91,35 +69,9 @@ function ProjectCard({ project, onSelect }) {
     });
   }
   return <button className={`project-card card-${project.color}`} data-project={project.id} onClick={() => onSelect(project)} onPointerMove={tilt} onPointerLeave={resetTilt} onPointerCancel={resetTilt} onBlur={resetTilt}>
-    <div className="project-visual"><div className="project-card-top"><span><Icon size={12}/>{project.label}</span><span>IX — {project.id}</span></div><div className="project-screen-wrap"><InterfaceScreen type={project.type}/></div><div className="project-visual-caption"><span>ENGINEERED TO EVOLVE</span><span>✧</span></div></div>
-    <div className="project-info"><span className="project-category">{project.name}</span><h3>{project.title}<ArrowUpRight size={22}/></h3><p>{project.description}</p><div className="project-tags">{project.tags.map(t => <span key={t}>{t}</span>)}</div></div>
+    <div className="project-visual"><div className="project-card-top"><span><Icon size={12}/>{project.label}</span><span>IX — {project.id}</span></div><div className="project-screen-wrap"><img className="project-image" src={`${import.meta.env.BASE_URL}images/projects/${project.image}.png`} alt={project.alt} width="1536" height="1024" loading="lazy" decoding="async"/></div><div className="project-visual-caption"><span>IMAGEN ILUSTRATIVA</span><span>✧</span></div></div>
+    <div className="project-info"><span className="project-category">{project.name}</span><h3>{project.title}<ArrowUpRight size={22}/></h3><p className="project-client">{project.client} · {project.location}</p><p>{project.description}</p><div className="project-tags">{project.tags.map(t => <span key={t}>{t}</span>)}</div></div>
   </button>;
-}
-
-function ProjectGrid({ items, onSelect }) {
-  const gridRef = useRef(null);
-  const positions = useRef(new Map());
-  useLayoutEffect(() => {
-    const animations = [];
-    const next = new Map();
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-    [...gridRef.current.children].forEach(card => {
-      const position = { x: card.offsetLeft, y: card.offsetTop };
-      const previous = positions.current.get(card.dataset.project);
-      next.set(card.dataset.project, position);
-      if (!previous || reduced.matches || !card.animate) return;
-      const x = previous.x - position.x;
-      const y = previous.y - position.y;
-      if (x || y) animations.push(card.animate([
-        { translate: `${x}px ${y}px` }, { translate: '0 0' },
-      ], { duration: 420, easing: 'cubic-bezier(.22, 1, .36, 1)' }));
-    });
-    positions.current = next;
-    const cancel = () => animations.forEach(animation => animation.cancel());
-    reduced.addEventListener('change', cancel);
-    return () => { cancel(); reduced.removeEventListener('change', cancel); };
-  }, [items]);
-  return <div ref={gridRef} className="projects-grid" aria-live="polite">{items.map(project => <ProjectCard key={project.id} project={project} onSelect={onSelect}/>)}</div>;
 }
 
 function ProjectModal({ project, onClose }) {
@@ -153,7 +105,7 @@ function ProjectModal({ project, onClose }) {
       if (opener instanceof HTMLElement && opener.isConnected) opener.focus({ preventScroll: true });
     };
   }, []);
-  return <dialog ref={dialogRef} className="project-modal" onCancel={e => { e.preventDefault(); close(); }} onClick={e => { if (e.target === e.currentTarget) close(); }} aria-labelledby="modal-title"><button className="modal-close icon-button" onClick={close} aria-label="Cerrar proyecto"><X/></button><div className={`modal-visual card-${project.color}`}><InterfaceScreen type={project.type} large/></div><div className="modal-content"><SectionLabel>Concepto de aplicación / {project.id}</SectionLabel><h2 id="modal-title">{project.name}</h2><p>{project.detail}</p><h3>Alcance propuesto</h3><ul>{project.scope.map(item => <li key={item}><Check size={16}/>{item}</li>)}</ul><div className="project-tags">{project.tags.map(t => <span key={t}>{t}</span>)}</div><p className="concept-note">Visualización ilustrativa. El alcance y las tecnologías se definen según las necesidades de cada proyecto.</p><a className="button button-primary" href="#contacto" onClick={onClose}>Quiero una solución así <ArrowUpRight size={18}/></a></div></dialog>;
+  return <dialog ref={dialogRef} className="project-modal" onCancel={e => { e.preventDefault(); close(); }} onClick={e => { if (e.target === e.currentTarget) close(); }} aria-labelledby="modal-title"><button className="modal-close icon-button" onClick={close} aria-label="Cerrar proyecto"><X/></button><div className={`modal-visual card-${project.color}`}><img className="project-image" src={`${import.meta.env.BASE_URL}images/projects/${project.image}.png`} alt={project.alt} width="1536" height="1024"/></div><div className="modal-content"><SectionLabel>Proyecto ejecutado / {project.id}</SectionLabel><h2 id="modal-title">{project.name}</h2><p className="project-client">{project.client} · {project.sector}<br/>{project.location}</p><p>{project.detail}</p><h3>Alcance ejecutado</h3><ul>{project.scope.map(item => <li key={item}><Check size={16}/>{item}</li>)}</ul><h3>Tecnologías y especialidades</h3><div className="project-tags">{project.tags.map(t => <span key={t}>{t}</span>)}</div>{project.results.length > 0 && <><h3>Resultados y valor generado</h3><ul>{project.results.map(item => <li key={item}><Check size={16}/>{item}</li>)}</ul></>}<p className="concept-note">Imagen ilustrativa generada con IA para representar el proyecto.</p><a className="button button-primary" href="#contacto" onClick={onClose}>Quiero una solución así <ArrowUpRight size={18}/></a></div></dialog>;
 }
 
 const services = [
@@ -227,11 +179,11 @@ function ContactForm() {
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [filter, setFilter] = useState('Todos');
-  const [showAll, setShowAll] = useState(false);
+
   const [selected, setSelected] = useState(null);
   const [activeSection, setActiveSection] = useState('');
   const menuToggleRef = useRef(null);
-  usePageMotion(filter, showAll);
+  usePageMotion(filter);
   useEffect(() => {
     if (!window.IntersectionObserver) return;
     const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) setActiveSection(({ clientes: 'experiencia', proyectos: 'experiencia', metodologia: 'nosotros', valor: 'nosotros' })[entry.target.id] || entry.target.id); }), { rootMargin: '-15% 0px -65% 0px' });
@@ -244,10 +196,7 @@ function App() {
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [menuOpen]);
-  const visibleProjects = useMemo(() => {
-    const filtered = projects.filter(p => filter === 'Todos' || p.category === filter);
-    return showAll || filter !== 'Todos' ? filtered : filtered.slice(0, 3);
-  }, [filter, showAll]);
+  const visibleProjects = useMemo(() => projects.filter(p => filter === 'Todos' || p.categories.includes(filter)), [filter]);
   return <><a href="#main" className="skip-link">Saltar al contenido</a><header className="site-header"><div className="header-inner"><div className="header-identity"><Brand/><p className="header-tagline">Soluciones de ingeniería para industrias eficientes e innovadoras</p></div><nav className={menuOpen ? 'main-nav nav-open' : 'main-nav'} id="main-navigation" aria-label="Navegación principal">{navLinks.map(([name, id]) => <a className={activeSection === id ? 'active' : ''} aria-current={activeSection === id ? 'location' : undefined} href={`#${id}`} key={id} onClick={() => setMenuOpen(false)}>{name}</a>)}<a className="button button-small button-primary" href="#contacto" onClick={() => setMenuOpen(false)}>Hablemos de tu proyecto <ArrowUpRight size={16}/></a></nav><a className="header-contact button button-small button-primary" href="#contacto">Hablemos de tu proyecto <ArrowUpRight size={16}/></a><button ref={menuToggleRef} className="menu-toggle icon-button" aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={menuOpen} aria-controls="main-navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X/> : <Menu/>}</button></div><div className="scroll-progress" aria-hidden="true"/></header>
     <main id="main">
       <section className="hero" id="inicio">
@@ -279,7 +228,7 @@ function App() {
 
       <div id="experiencia" role="region" aria-label="Experiencia">
       <Clients/>
-      <section className="projects section-pad" id="proyectos"><div className="container"><div className="section-heading"><div><SectionLabel light>INGENIERÍA EN ACCIÓN</SectionLabel><h2>De los retos a<br/><span>las soluciones.</span></h2></div><div className="projects-intro"><p>Una mirada a lo que podemos crear.<br/>Explora aplicaciones que conectan nuestra<br className="desktop-break"/> experiencia con las necesidades de tu industria.</p><span><span className="live-dot"/> CONCEPTOS DE APLICACIÓN</span></div></div><div className="portfolio-toolbar"><div className="project-filters" role="group" aria-label="Filtrar proyectos">{['Todos', 'Automatización', 'IIoT', 'Eléctrica'].map(f => <button className={filter === f ? 'selected' : ''} aria-pressed={filter === f} key={f} onClick={() => { setFilter(f); setShowAll(false); }}>{f}{f === 'Todos' && <span>06</span>}</button>)}</div><span className="portfolio-hint"><Crosshair size={14}/> EXPLORA CADA SOLUCIÓN</span></div><ProjectGrid items={visibleProjects} onSelect={setSelected}/><div className="projects-bottom"><p>Interfaces ilustrativas. Ingeniería con posibilidades reales.</p>{filter === 'Todos' && <button className="button button-dark-outline" onClick={() => setShowAll(!showAll)}>{showAll ? 'Ver proyectos destacados' : 'Explorar todos los conceptos'}{showAll ? <Minus size={16}/> : <Plus size={16}/>}</button>}{filter !== 'Todos' && <span className="filtered-count">{visibleProjects.length} {visibleProjects.length === 1 ? 'concepto' : 'conceptos'} de {filter}</span>}</div></div></section>
+      <section className="projects section-pad" id="proyectos"><div className="container"><div className="section-heading"><div><SectionLabel light>INGENIERÍA EN ACCIÓN</SectionLabel><h2>De los retos a<br/><span>las soluciones.</span></h2></div><div className="projects-intro"><p>Proyectos que conectan nuestra experiencia<br/>con los retos de cada industria.<br className="desktop-break"/> Conoce su alcance y las soluciones implementadas.</p><span><span className="live-dot"/> EXPERIENCIA EN PROYECTOS</span></div></div><div className="portfolio-toolbar"><div className="project-filters" role="group" aria-label="Filtrar proyectos">{['Todos', 'Automatización', 'IIoT', 'Eléctrica'].map(f => <button className={filter === f ? 'selected' : ''} aria-pressed={filter === f} key={f} onClick={() => { setFilter(f); }}>{f}{f === 'Todos' && <span>{String(projects.length).padStart(2, '0')}</span>}</button>)}</div><span className="portfolio-hint"><Crosshair size={14}/> EXPLORA CADA SOLUCIÓN</span></div><ProjectCarousel items={visibleProjects} modalOpen={Boolean(selected)} renderCard={project => <ProjectCard key={project.id} project={project} onSelect={setSelected}/>}/><div className="projects-bottom"><p>Proyectos ejecutados. Imágenes ilustrativas generadas con IA.</p></div></div></section>
 
       </div>
 

@@ -1,0 +1,21 @@
+.project-image{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;border-radius:5px;border:1px solid #5b789c40;box-shadow:0 12px 30px #0004}
+.project-info .project-client{font-size:10px;color:#b2c8e2;line-height:1.7;margin-top:12px}
+.project-info h3{align-items:flex-start}
+.project-info h3 svg{margin-top:5px;flex-shrink:0}
+.modal-content .project-client{font-size:13px;line-height:1.8;color:#526782}
+.modal-content h3{margin-top:25px}
+.modal-visual .project-image{max-height:360px;object-fit:contain;background:#081527}
+.project-filters{flex-wrap:wrap}
+.projects-grid.project-track{display:flex;gap:24px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;max-width:none;margin:0;padding:5px 0 12px;overscroll-behavior-x:contain}
+.project-track::-webkit-scrollbar{display:none}
+.project-track>.project-card{flex:0 0 calc((100% - 48px)/3);min-width:0;scroll-snap-align:start;align-self:stretch}
+.project-track:focus-visible{outline:2px solid #7faaff;outline-offset:5px}
+.carousel-controls{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:22px}
+.carousel-count{font-size:12px;color:#a7bbd5}
+.carousel-buttons{display:flex;align-items:center;gap:10px}
+.carousel-buttons button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:44px;height:44px;border:1px solid #536c8c;border-radius:5px;background:transparent;color:#d5e5fb}
+.carousel-buttons button:hover{background:#243c5c}
+.carousel-buttons button:disabled{opacity:.35;cursor:default}
+.carousel-buttons .carousel-play{padding-inline:12px;font-size:11px}
+@media(max-width:1023px){.project-track>.project-card{flex-basis:calc((100% - 24px)/2)}}
+@media(max-width:767px){.project-track>.project-card{flex-basis:100%}.carousel-controls{gap:8px}.carousel-count{font-size:10px}.carousel-buttons{gap:6px}}
