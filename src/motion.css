@@ -7,7 +7,7 @@
 .brand { position: relative; min-height: 48px; }
 .brand-image { display: none; width: 220px; height: 72px; object-fit: contain; }
 .brand-image.is-loaded { display: block; }
-.brand-image-on-white { padding: 8px 12px; background: white; border-radius: 5px; }
+.brand-image-light { filter: invert(1) hue-rotate(180deg); }
 .technology-brand { min-width: 0; padding-inline: 24px; gap: 22px; }
 .technology-logo-slot { display: grid; place-items: center; width: 100%; height: 72px; }
 .technology-logo-slot img { display: block; width: 100%; max-width: 240px; height: 72px; object-fit: contain; }
