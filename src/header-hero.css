@@ -87,3 +87,44 @@
   .industry-grid > div:nth-child(n) { border-left: 1px solid var(--line); }
   .industry-grid > div:nth-child(odd) { border-left: 0; }
 }
+
+/* Editorial updates: keep longer copy readable and headings left aligned. */
+.about .eyebrow { font-size: clamp(18px, 2vw, 24px); letter-spacing: 1.4px; }
+.technology-heading, .industries-heading { text-align: left; }
+.technology-heading .eyebrow, .industries-heading .eyebrow { justify-content: flex-start; }
+.industries-heading h2 { margin-inline: 0; max-width: none; }
+.service-card > p { min-height: 0; font-size: 14px; line-height: 1.8; }
+.service-card li { font-size: 13px; line-height: 1.7; }
+.service-card li svg { flex-shrink: 0; margin-top: 4px; }
+.service-card h3 { min-height: 2.6em; }
+.projects .section-heading > div { min-width: 0; }
+.projects-intro { max-width: 400px; }
+.footer-main > p { max-width: 410px; }
+
+/* Reserve space for the full service banner below the sticky laptop header. */
+@media (min-width: 768px) {
+  .hero { min-height: 0; }
+  .hero-content { min-height: clamp(420px, calc(100svh - 164px), 630px); padding-block: 36px; }
+  .hero h1 { font-size: clamp(58px, 9vh, 83px); }
+  .hero-marquee-group > span { padding-block: 18px; }
+  .hero-marquee-track { animation-duration: 105s; }
+}
+@media (min-width: 768px) and (max-width: 1399px) {
+  .hero-content { min-height: clamp(400px, calc(100svh - 208px), 600px); }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .services-grid { grid-template-columns: 1fr; }
+  .service-card h3 { min-height: 0; }
+}
+
+/* Larger specialty icons, using each card's established accent color. */
+.service-card .service-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #fff, #eef4ff);
+  box-shadow: inset 0 1px 0 #fff, 0 5px 14px #14243b08;
+}
+.service-control .service-icon { background: linear-gradient(145deg, #fff, #e4f5f9); }
+.service-iot .service-icon { background: linear-gradient(145deg, #fff, #eeebff); }
+.service-card .service-icon svg { width: 34px; height: 34px; }

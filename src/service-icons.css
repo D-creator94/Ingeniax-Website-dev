@@ -1,0 +1,32 @@
+.chip-pin { transition: transform .35s ease; }
+.chip-pin-top { transform-origin: 16px 8px; }
+.chip-pin-bottom { transform-origin: 16px 24px; }
+.chip-pin-left { transform-origin: 8px 16px; }
+.chip-pin-right { transform-origin: 24px 16px; }
+.iot-bit { fill: currentColor; fill-opacity: 0; }
+.data-trend { stroke-dasharray: 1; stroke-dashoffset: 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .service-card:is(:hover, :focus-within) .chip-pin-top,
+  .service-card:is(:hover, :focus-within) .chip-pin-bottom { transform: scaleY(1.65); }
+  .service-card:is(:hover, :focus-within) .chip-pin-left,
+  .service-card:is(:hover, :focus-within) .chip-pin-right { transform: scaleX(1.65); }
+  .service-card:is(:hover, :focus-within) .iot-bit { animation: iot-bit-light 1.2s ease-in-out both; }
+  .service-card:is(:hover, :focus-within) .iot-bit-2 { animation-delay: .18s; }
+  .service-card:is(:hover, :focus-within) .iot-bit-3 { animation-delay: .36s; }
+  .service-card:is(:hover, :focus-within) .data-trend { animation: data-trend-draw .85s ease-out both; }
+  .service-card:is(:hover, :focus-within) .data-arrow { animation: data-arrow-reveal .2s .7s ease-out both; }
+}
+
+@keyframes iot-bit-light {
+  0%, 100% { fill-opacity: 0; }
+  35%, 60% { fill-opacity: .65; }
+}
+@keyframes data-trend-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes data-arrow-reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
